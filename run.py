@@ -5,7 +5,6 @@ from OpenGL.raw.GLUT.constants import GLUT_RGB
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from background import run
-from config import Settings
 import argparse, sys, os.path
 
 
