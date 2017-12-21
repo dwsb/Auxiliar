@@ -9,34 +9,34 @@ from config import Settings
 import argparse, sys, os.path
 
 
-width, height = 800, 600
+largura, altura = 800, 600
 
 settings = Settings()
 
-colors_to_randomize = {
+cores = {
     'R': False,
     'G': False,
     'B': False
 }
 
-random_factor = 0
+fator_randomizador = 0
 
 window = None
 
 PROMPT = ("ESC - SAIR","C - TROCAR DE OBJETO")
 
 
-def check_args():
-    global colors_to_randomize, random_factor
+def args():
+    global cores, fator_randomizador
 
     parser = argparse.ArgumentParser(description="Textura randomica a partir da coloracao")
-    parser.add_argument('random_factor', metavar='F', help='Fator de randomizacao (escolha entre 0-1)')
+    parser.add_argument('fator_randomizador', metavar='F', help='Fator de randomizacao (escolha entre 0-1)')
     parser.add_argument('--colors', metavar='C', default='RGB', help='Cores a serem randomizadas (e.g: RGB)')
 
     args = parser.parse_args()
 
-    if not (0 <= float(args.random_factor) <= 1):
-        print "Entrada invalida %r (Digite um fator de randomizacao entre 0-1)" % args.random_factor
+    if not (0 <= float(args.fator_randomizador) <= 1):
+        print "Entrada invalida %r (Digite um fator de randomizacao entre 0-1)" % args.fator_randomizador
         print "Tipo python %s -h para mais informacoes." % sys.argv[0]
         sys.exit(1)
 
@@ -45,19 +45,19 @@ def check_args():
             print "Entrada invalida %r (A opcao %r nao e valida, opcoes validas (RGB))" % (args.colors, c)
             print "Tipo python %s -h para mais informacoes." % sys.argv[0]
             sys.exit(1)
-        colors_to_randomize[str(c).upper()] = True
+        cores[str(c).upper()] = True
 
-    random_factor = args.random_factor
+    fator_randomizador = args.fator_randomizador
 
 
-def render():
+def renderizar():
     glClear(GL_COLOR_BUFFER_BIT)
     glPointSize(2.0)
     glBegin(GL_POINTS)
     glColor3f(0.0, 1.0, 1.0)
 
     print '\nCarregando objeto... Aguarde um momento!'
-    sc = run(width, height, colors_to_randomize, float(random_factor), settings)
+    sc = run(largura, altura, cores, float(fator_randomizador), settings)
     print 'Objeto carregado\n'
 
     glEnd()
@@ -65,7 +65,7 @@ def render():
     glutSwapBuffers()
 
 
-def handle_keyboard(*args):
+def captarEntradas(*args):
     global settings
     ESC = '\x1b'
 
@@ -84,25 +84,25 @@ def handle_keyboard(*args):
         else:
             print 'Erro! Caminho errado ou o arquivo da camera nao existe!!!\n'
 
-        new_random_factor = raw_input(' - Insira o fator de randomizacao entre 0-1, caso deseje mudar o atual: ')
-        if len(new_random_factor) > 0:
+        new_fator_randomizador = raw_input(' - Insira o fator de randomizacao entre 0-1, caso deseje mudar o atual: ')
+        if len(new_fator_randomizador) > 0:
             try:
-                global random_factor
-                tmp = float(new_random_factor)
-                random_factor = tmp
+                global fator_randomizador
+                tmp = float(new_fator_randomizador)
+                fator_randomizador = tmp
             except:
                 print ' A entrada %r e um fator invalido!!! O fator antigo permanecera.'
 
         new_random_colors = raw_input(' - Insira os tipos de cores a serem randomizadas [RGB], caso deseje mudar as atuais: ')
-        global colors_to_randomize
+        global cores
         if len(new_random_colors) > 0:
             for c in new_random_colors:
                 if str(c).upper() in ['R', 'G', 'B']:
                     for color in ['R', 'G', 'B']:
-                        colors_to_randomize[color] = False
+                        cores[color] = False
                     for c2 in new_random_colors:
                         if str(c2).upper() in ['R', 'G', 'B']:
-                            colors_to_randomize[str(c2).upper()] = True
+                            cores[str(c2).upper()] = True
                     break
 
 
@@ -115,27 +115,25 @@ def handle_keyboard(*args):
 
 def init():
     glClear(GL_COLOR_BUFFER_BIT)
-
-    glViewport(0, 0, width, height)
+    glViewport(0, 0, largura, altura)
     glMatrixMode(GL_PROJECTION)
-    glOrtho(0.0, width, height, 0.0, -5.0, 5.0)
-
+    glOrtho(0.0, largura, altura, 0.0, -5.0, 5.0)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
 
 if __name__ == '__main__':
-    check_args()
-
+    args()
+    
     print "\nAperte 'c' para mudar de objeto .\nAperte ESC para sair\n"
     glutInit()
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA)
-    glutInitWindowSize(width, height)
+    glutInitWindowSize(largura, altura)
     glutInitWindowPosition(0, 0)
     window = glutCreateWindow('PG2 - Random Color Texture')
 
-    glutDisplayFunc(render)
-    glutKeyboardFunc(handle_keyboard)
+    glutDisplayFunc(renderizar)
+    glutKeyboardFunc(captarEntradas)
 
     glClearColor(0, 0, 0, 0)
     init()
