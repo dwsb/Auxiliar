@@ -6,7 +6,7 @@ from scene.camera import Camera
 
 
 # if __name__ == '__main__':
-def run(width, height, colors_to_randomize, random_factor, settings):
+def run(width, height, colors_to_randomize, random_factor, input_camera, input_objeto, input_iluminacao):
 
     '''passos:'''
 
@@ -15,11 +15,11 @@ def run(width, height, colors_to_randomize, random_factor, settings):
     1.2) V = V - proj N (V)
     1.3) U = N x V")
     t1.4) alfa = UNV = {U, N, V}"""
-    cam = Camera(settings.camera_input)
+    cam = Camera(input_camera)
 
 
     """2) cena"""
-    sc = scene.Scene(settings.object_input, settings.iluminacao_input)
+    sc = scene.Scene(input_objeto, input_iluminacao)
 
     """2.1) passar a posição da fonte de luz de coordenadas de mundo para coordenadas de vista"""
     pl_view = cam.to_view_coordinate_system(sc.pl)

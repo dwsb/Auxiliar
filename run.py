@@ -11,7 +11,9 @@ import argparse, sys, os.path
 
 largura, altura = 800, 600
 
-settings = Settings()
+input_camera = 'input/maca.cfg'
+input_objeto = 'input/maca.byu'
+input_iluminacao = 'input/iluminacao.txt'
 
 cores = {
     'R': False,
@@ -57,7 +59,7 @@ def renderizar():
     glColor3f(0.0, 1.0, 1.0)
 
     print '\nCarregando objeto... Aguarde um momento!'
-    sc = run(largura, altura, cores, float(fator_randomizador), settings)
+    sc = run(largura, altura, cores, float(fator_randomizador), input_camera, input_objeto, input_iluminacao)
     print 'Objeto carregado\n'
 
     glEnd()
@@ -67,6 +69,8 @@ def renderizar():
 
 def captarEntradas(*args):
     global settings
+    global input_objeto
+    global input_camera
     ESC = '\x1b'
 
     if args[0] == ESC:
@@ -74,13 +78,13 @@ def captarEntradas(*args):
     elif args[0] == 'c':
         path = raw_input('\n - Insira o caminho com nome do novo objeto: ')
         if os.path.isfile(path):
-            settings.object_input = path
+            input_objeto = path
         else:
             print 'Erro! Caminho errado ou o arquivo do objeto nao existe!!!\n'
             return
         camera_path = raw_input(' - Insira o caminho com nome do arquivo de camera correspondente ao objeto: ')
         if os.path.isfile(camera_path):
-            settings.camera_input = camera_path
+            input_camera = camera_path
         else:
             print 'Erro! Caminho errado ou o arquivo da camera nao existe!!!\n'
 
