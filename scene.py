@@ -18,15 +18,15 @@ class Scene(object):
 
         self.pontos = []
         self.triangulos = []
-        self.triangles_view_objects = []
-        self.triangles_screen_objects = []
+        self.triangulos_v_obj = []
+        self.triangulos__obj = []
         self.pontos_normal = []
-        self.triangles_normal = []
-        self.view_coordinates = []
-        self.screen_coordinates = []
+        self.triangulos_normal = []
+        self.ver_coordenadas = []
+        self.coordenadas_tela = []
 
         self.fator_de_randomizacao = 0.0
-        self.n_factor = 0.0
+        self.n_fator = 0.0
         self.pl = 0.0
         self.ka = 0.0
         self.ia = 0.0
@@ -61,7 +61,7 @@ class Scene(object):
         '''Carrega os dados de illuminação'''
         with open(iluminacao_entrada, 'r') as iluminacao_config:
             linhas_iluminacao = iluminacao_config.readlines()
-            self.n_factor = float(linhas_iluminacao[-1])
+            self.n_fator = float(linhas_iluminacao[-1])
 
             pl_format = linhas_iluminacao[0].split()
 
@@ -79,9 +79,6 @@ class Scene(object):
 
             il_format = linhas_iluminacao[6].split()
             self.il = numpy.array([float(il_format[0]),float(il_format[1]),float(il_format[2])])
-
-    '''a iluminação de phong é caracterizada pela junção dos vetores de iluminação
-        de ambiente, difusa e especular'''
     '''
         | ; Pl - Posicao da luz em coordenadas de mundo
         | ; ka - reflexao ambiental
@@ -115,20 +112,13 @@ class Scene(object):
             random_g = attenuation if cores_randomizadas['G'] is True else 1
             random_b = attenuation if cores_randomizadas['B'] is True else 1
 
-            # if d < 0.2:
-            #     self.od = np.array([0.9, 0.1, 0.1])
-            # elif 0.2 < d < 0.5:
-            #     self.od = np.array([0.1, 0.9, 0.1])
-            # elif d > 0.5:
-            #     self.od = np.array([0.1, 0.1, 0.9])
-
             od = numpy.array([self.od[0]*random_r, self.od[1]*random_g, self.od[2]*random_b])
 
             id = (od * self.il) * self.kd * (numpy.dot(N,l))
 
             r = opVetores.normalizar((2*N*numpy.dot(N, l)) - l)
             if (numpy.dot(v,r) >= 0):
-                ie = (self.il) * self.ks * (pow(float(numpy.dot(v,r)), self.n_factor))
+                ie = (self.il) * self.ks * (pow(float(numpy.dot(v,r)), self.n_fator))
 
         color = ia + id + ie
 
@@ -140,32 +130,20 @@ class Scene(object):
         return color
 
 
-    def create_triangle_screen_objects(self):
+    def criar_triangulos_objeto(self):
         for t in self.triangulos:
-            p1, p2, p3 = self.screen_coordinates[t[0] - 1], self.screen_coordinates[t[1] - 1], self.screen_coordinates[t[2] - 1]
-            self.triangles_screen_objects.append(Triangulo(p1, p2, p3, t[0], t[1], t[2]))
+            p1, p2, p3 = self.coordenadas_tela[t[0] - 1], self.coordenadas_tela[t[1] - 1], self.coordenadas_tela[t[2] - 1]
+            self.triangulos__obj.append(Triangulo(p1, p2, p3, t[0], t[1], t[2]))
 
 
     def zbuffer(self, height, width):
         self.z_buffer = numpy.full((max(height, width) + 1, max(width, height) + 1), sys.maxint, dtype=float)
 
 
-    def rasterize_screen_triangles(self, cores_randomizadas, fator_de_randomizacao):
-        '''
-        :param cores_randomizadas: cores que devem ser randomizadas no Od, conforme passado na entrada
-        :param fator_de_randomizacao: fator de aleatorização a ser aplicado nas cores
-        :return: None
-        '''
+    def rast_tela_triangulos(self, cores_randomizadas, fator_de_randomizacao):
 
-        def yscan(triangle):
-            '''
-            yscan conforme visto
-            com dois casos especiais: bottom_flat e top_flat
-            e o caso geral em que o triângulo é dividido em um bottom_flat e outro top_flat
-
-            :param triangle: triangulo a ser rasterizado
-            :return: None
-            '''
+        def yscan(triangulo):
+            
             def bottom_flat(vertices):
                 '''
                 :param vertices: vertices do triangulo ordenados pelo Y
@@ -182,7 +160,7 @@ class Scene(object):
                 scanlineY = v[0][1]
                 while scanlineY <= v[1][1]:
                     ''' para cada linha do y scan, rasteriza a linha'''
-                    desenha_linha(triangle, curx1, curx2, scanlineY)
+                    desenha_linha(triangulo, curx1, curx2, scanlineY)
                     curx1 += invslope1
                     curx2 += invslope2
                     scanlineY += 1
@@ -202,20 +180,20 @@ class Scene(object):
 
                 scanlineY = v[2][1]
                 while scanlineY > v[0][1]:
-                    desenha_linha(triangle, curx1, curx2, scanlineY)
+                    desenha_linha(triangulo, curx1, curx2, scanlineY)
                     curx1 -= invslope1
                     curx2 -= invslope2
                     scanlineY -= 1
 
             ''' primeiro os vetores sao ordenados pelos seus Y'''
-            v = sorted([triangle.v1, triangle.v2, triangle.v3], key=lambda vx: vx[1])
+            v = sorted([triangulo.v1, triangulo.v2, triangulo.v3], key=lambda vx: vx[1])
             '''notação: v1 == v[0], v1.x == v[0][0], v1.y == v[0][1] etc'''
 
             if v[0][1] == v[1][1] == v[2][1]:
                 ''' se for um triangulo "sem altura/colinear" ele é rasterizado como uma linha.'''
                 curx1 = min(v[0][0], min(v[1][0], v[2][0]))
                 curx2 = max(v[0][0], max(v[1][0], v[2][0]))
-                desenha_linha(triangle, curx1, curx2, v[0][1], colinear=True)
+                desenha_linha(triangulo, curx1, curx2, v[0][1], colinear=True)
             elif v[1][1] == v[2][1]:
                 ''' caso bottom_flat'''
                 bottom_flat(v)
@@ -236,30 +214,18 @@ class Scene(object):
                 top_flat([v[1], v4, v[2]])
 
 
-        def desenha_linha(triangle, curx1, curx2, y, colinear=False):
-            '''
-            :param triangle: triangulo a ser rasterizado
-            :param curx1: Xmin, onde começa a rasterização da linha atual
-            :param curx2: Xmax, onde termina a rasterização da linha atual
-            :param y: Yscan, indica qual linha (Y = y) está sendo rasterizada
-            :return: None
-            '''
-            t = triangle
+        def desenha_linha(triangulo, curx1, curx2, y, colinear=False):
+           
+            t = triangulo
             x_min = min(t.min_x, min(curx1, curx2))
             x_max = max(t.max_x, max(curx1, curx2))
             for x in range(int(x_min), int(x_max)+1):
                 pixel = numpy.array([x, y])
                 if t.pontos_triangulos(pixel) or colinear:
-                    '''
-                    verifica se o pixel realmente pertence ao triângulo para corrigir casos de erro de precisão
-                    do python
-                    '''
-
-                    ''' calcula o pixel em coordenadas baricêntricas do triângulo atual '''
+                  
                     alfa, beta, gama = t.coordenadas_baricentricas(pixel)
 
-                    ''' passa os vertices correspondentes em coordenadas de vista (3D) para o sistema baricentrico encontrado'''
-                    _P = alfa * self.view_coordinates[t.ind1 - 1] + beta * self.view_coordinates[t.ind2 - 1] + gama * self.view_coordinates[t.ind3 - 1]
+                    _P = alfa * self.ver_coordenadas[t.ind1 - 1] + beta * self.ver_coordenadas[t.ind2 - 1] + gama * self.ver_coordenadas[t.ind3 - 1]
 
                     '''consulta ao Z-buffer'''
                     if _P[2] <= self.z_buffer[pixel[0]][pixel[1]]:
@@ -269,14 +235,10 @@ class Scene(object):
                              beta * self.pontos_normal[t.ind2 - 1] +
                              gama * self.pontos_normal[t.ind3 - 1])
 
-                        # d = np.sqrt(pow(alfa - 1/3.0, 2) + pow(beta - 1/3.0, 2) + pow(gama - 1/3.0, 2))
-
                         color = self.phong(_P, N, cores_randomizadas, fator_de_randomizacao)
                         glColor3f(color[0], color[1], color[2])
                         glVertex2f(pixel[0], pixel[1])
 
 
-        '''para cada triângulo'''
-        for t in self.triangles_screen_objects:
-            '''para cada pixel P interno do triângulo'''
+        for t in self.triangulos__obj:
             yscan(t)

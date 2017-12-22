@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from OpenGL.raw.GLUT import glutBitmapCharacter
 
 from OpenGL.raw.GLUT.constants import GLUT_RGB

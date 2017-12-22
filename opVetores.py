@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 
 '''retorna o vetor normalizado (com norma == 1)'''
