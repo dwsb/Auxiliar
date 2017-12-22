@@ -77,15 +77,15 @@ def captarEntradas(*args):
         glutDestroyWindow(window)
     elif args[0] == 'c':
         path = raw_input('\n - Insira o caminho com nome do novo objeto: ')
-        if os.path.isfile("input/Objetos/"+path):
-            input_objeto = "input/Objetos/"+ path
+        if os.path.isfile("input/"+path):
+            input_objeto = "input/"+path
             print(input_objeto)
         else:
             print 'Erro! Caminho errado ou o arquivo do objeto nao existe!!!\n'
             return
         camera_path = raw_input(' - Insira o caminho com nome do arquivo de camera correspondente ao objeto: ')
-        if os.path.isfile("input/Cameras/"+camera_path):
-            input_camera = "input/Cameras/"+ camera_path
+        if os.path.isfile("input/"+camera_path):
+            input_camera = "input/"+camera_path
             print input_camera
         else:
             print 'Erro! Caminho errado ou o arquivo da camera nao existe!!!\n'

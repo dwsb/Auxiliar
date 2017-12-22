@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
+import op.opVetores
 import numpy as np
-import operations.vector
-
 
 class Camera(object):
     def __init__(self, camera_input, width=800, height=600):
@@ -33,9 +32,9 @@ class Camera(object):
             self.hx = float(params_config_splited[1])
             self.hy = float(params_config_splited[2])
 
-        self.N = operations.vector.normalize(self.camera_n)
-        self.V = operations.vector.normalize(
-            self.camera_v - operations.vector.grand_schimidt(self.camera_v, self.N))
+        self.N = op.opVetores.normalizar(self.camera_n)
+        self.V = op.opVetores.normalizar(
+            self.camera_v - op.opVetores.grand_schimidt(self.camera_v, self.N))
         self.U = np.cross(self.N, self.V)
         self.UVN_matrice = np.array([self.U, self.V, self.N])
 

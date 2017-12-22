@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from operations import vector
-from operations.triangle import Triangle
+from op import opVetores
+from op.triangulos import Triangulo
 from OpenGL.GL import *
 import sys, random
 
@@ -117,13 +117,13 @@ class Scene(object):
     def pixel_phong_ilumination(self, ponto, N, colors_to_randomize, random_factor):
         ia = self.ia*self.ka
         l = (self.pl - ponto)
-        l = vector.normalize(l)
-        N = vector.normalize(N)
+        l = opVetores.normalizar(l)
+        N = opVetores.normalizar(N)
 
         id = np.array([0.0, 0.0, 0.0])
         ie = np.array([0.0, 0.0, 0.0])
 
-        v = vector.normalize(-ponto)
+        v = opVetores.normalizar(-ponto)
         if (np.dot(v,N) < 0):
             N = -N
 
@@ -145,7 +145,7 @@ class Scene(object):
 
             id = (od * self.il) * self.kd * (np.dot(N,l))
 
-            r = vector.normalize((2*N*np.dot(N, l)) - l)
+            r = opVetores.normalizar((2*N*np.dot(N, l)) - l)
             if (np.dot(v,r) >= 0):
                 ie = (self.il) * self.ks * (pow(float(np.dot(v,r)), self.n_factor))
 
@@ -162,7 +162,7 @@ class Scene(object):
     def create_triangle_screen_objects(self):
         for t in self.triangles:
             p1, p2, p3 = self.screen_coordinates[t[0] - 1], self.screen_coordinates[t[1] - 1], self.screen_coordinates[t[2] - 1]
-            self.triangles_screen_objects.append(Triangle(p1, p2, p3, t[0], t[1], t[2]))
+            self.triangles_screen_objects.append(Triangulo(p1, p2, p3, t[0], t[1], t[2]))
 
 
     def init_zbuffer(self, height, width):
@@ -272,14 +272,14 @@ class Scene(object):
             x_max = max(t.max_x, max(curx1, curx2))
             for x in range(int(x_min), int(x_max)+1):
                 pixel = np.array([x, y])
-                if t.point_in_triangle(pixel) or colinear:
+                if t.pontos_triangulos(pixel) or colinear:
                     '''
                     verifica se o pixel realmente pertence ao triângulo para corrigir casos de erro de precisão
                     do python
                     '''
 
                     ''' calcula o pixel em coordenadas baricêntricas do triângulo atual '''
-                    alfa, beta, gama = t.barycentric_coordinates(pixel)
+                    alfa, beta, gama = t.coordenadas_baricentricas(pixel)
 
                     ''' passa os vertices correspondentes em coordenadas de vista (3D) para o sistema baricentrico encontrado'''
                     _P = alfa * self.view_coordinates[t.ind1 - 1] + beta * self.view_coordinates[t.ind2 - 1] + gama * self.view_coordinates[t.ind3 - 1]

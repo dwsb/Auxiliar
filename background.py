@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import operations.vector
-from operations.triangle import Triangle
+import op.opVetores
+from op.triangulos import Triangulo
 from scene import scene
 from scene.camera import Camera
 
@@ -38,16 +38,16 @@ def run(width, height, colors_to_randomize, random_factor, input_camera, input_o
         p1, p2, p3 = sc.view_coordinates[t[0] - 1], sc.view_coordinates[t[1] - 1], sc.view_coordinates[t[2] - 1]
 
         tr_normal = cam.get_triangle_normal(p1, p2, p3)
-        tr_normal = operations.vector.normalize(tr_normal)
+        tr_normal = op.opVetores.normalizar(tr_normal)
 
-        sc.triangles_view_objects.append(Triangle(p1, p2, p3, norm=tr_normal))
+        sc.triangles_view_objects.append(Triangulo(p1, p2, p3, norm=tr_normal))
         
         sc.points_normal[t[0] - 1] += tr_normal
         sc.points_normal[t[1] - 1] += tr_normal
         sc.points_normal[t[2] - 1] += tr_normal
 
     for i in range(len(sc.points_normal)):
-        sc.points_normal[i] = operations.vector.normalize(sc.points_normal[i])
+        sc.points_normal[i] = op.opVetores.normalizar(sc.points_normal[i])
 
     """2.6) para cada ponto do obj, projete-o para coord de tela 2D, sem descartar os pontos em coord 3D"""
     for vp in sc.view_coordinates:
