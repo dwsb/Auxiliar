@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy
-from op import opVetores
-from op.triangulos import Triangulo
+import opVetores
+from triangulos import Triangulo
 from OpenGL.GL import *
 import sys, random
 
