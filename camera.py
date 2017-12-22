@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import op.opVetores
+import opVetores
 import numpy as numpy
 
 class Camera(object):
@@ -23,8 +23,8 @@ class Camera(object):
             self.hx = float(parametros_cfg_format[1])
             self.hy = float(parametros_cfg_format[2])
 
-        self.N = op.opVetores.normalizar(self.camera_n)
-        self.V = op.opVetores.normalizar(self.camera_v - op.opVetores.grand_schimidt(self.camera_v, self.N))
+        self.N = opVetores.normalizar(self.camera_n)
+        self.V = opVetores.normalizar(self.camera_v - opVetores.grand_schimidt(self.camera_v, self.N))
         self.U = numpy.cross(self.N, self.V)
         self.UVN_matriz = numpy.array([self.U, self.V, self.N])
         self.width = width

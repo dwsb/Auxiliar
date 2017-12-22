@@ -1,7 +1,7 @@
-import op.opVetores
-from op.triangulos import Triangulo
-from scene import scene
-from scene.camera import Camera
+import opVetores
+from triangulos import Triangulo
+import scene
+from camera import Camera
 
 def run(largura, altura, cores_randomizadas, fator_de_randomizacao, entrada_camera, entrada_objeto, entrada_iluminacao):
 
@@ -17,7 +17,7 @@ def run(largura, altura, cores_randomizadas, fator_de_randomizacao, entrada_came
         p1, p2, p3 = cena.view_coordinates[t[0] - 1], cena.view_coordinates[t[1] - 1], cena.view_coordinates[t[2] - 1]
 
         tr_normal = cam.get_normal_triangulo(p1, p2, p3)
-        tr_normal = op.opVetores.normalizar(tr_normal)
+        tr_normal = opVetores.normalizar(tr_normal)
 
         cena.triangles_view_objects.append(Triangulo(p1, p2, p3, norm=tr_normal))
         
@@ -26,7 +26,7 @@ def run(largura, altura, cores_randomizadas, fator_de_randomizacao, entrada_came
         cena.pontos_normal[t[2] - 1] += tr_normal
 
     for i in range(len(cena.pontos_normal)):
-        cena.pontos_normal[i] = op.opVetores.normalizar(cena.pontos_normal[i])
+        cena.pontos_normal[i] = opVetores.normalizar(cena.pontos_normal[i])
 
     for vp in cena.view_coordinates:
         cena.screen_coordinates.append(cam.converter_coordenadas(vp))
