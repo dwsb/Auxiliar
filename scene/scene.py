@@ -25,7 +25,7 @@ class Scene(object):
         self.view_coordinates = []
         self.screen_coordinates = []
 
-        self.random_factor = 0.0
+        self.fator_de_randomizacao = 0.0
         self.n_factor = 0.0
         self.pl = 0.0
         self.ka = 0.0
@@ -95,7 +95,7 @@ class Scene(object):
     '''
         final_color = ambient_component + diffuse_component + specular_component
     '''
-    def phong(self, ponto, N, colors_to_randomize, random_factor):
+    def phong(self, ponto, N, cores_randomizadas, fator_de_randomizacao):
         ia = self.ia*self.ka
         l = (self.pl - ponto)
         l = opVetores.normalizar(l)
@@ -109,11 +109,11 @@ class Scene(object):
             N = -N
 
         if (numpy.dot(N, l) >= 0):
-            attenuation = random.uniform(1-random_factor, 1)
+            attenuation = random.uniform(1-fator_de_randomizacao, 1)
 
-            random_r = attenuation if colors_to_randomize['R'] is True else 1
-            random_g = attenuation if colors_to_randomize['G'] is True else 1
-            random_b = attenuation if colors_to_randomize['B'] is True else 1
+            random_r = attenuation if cores_randomizadas['R'] is True else 1
+            random_g = attenuation if cores_randomizadas['G'] is True else 1
+            random_b = attenuation if cores_randomizadas['B'] is True else 1
 
             # if d < 0.2:
             #     self.od = np.array([0.9, 0.1, 0.1])
@@ -150,14 +150,10 @@ class Scene(object):
         self.z_buffer = numpy.full((max(height, width) + 1, max(width, height) + 1), sys.maxint, dtype=float)
 
 
-    def rasterize_screen_triangles(self, colors_to_randomize, random_factor):
+    def rasterize_screen_triangles(self, cores_randomizadas, fator_de_randomizacao):
         '''
-        atentar para identação
-        em python um bloco pode ter vários outros blocos dentro do seu escopo
-        e no bloco-pai vc pode chamar os blocos-filhos
-
-        :param colors_to_randomize: cores que devem ser randomizadas no Od, conforme passado na entrada
-        :param random_factor: fator de aleatorização a ser aplicado nas cores
+        :param cores_randomizadas: cores que devem ser randomizadas no Od, conforme passado na entrada
+        :param fator_de_randomizacao: fator de aleatorização a ser aplicado nas cores
         :return: None
         '''
 
@@ -275,7 +271,7 @@ class Scene(object):
 
                         # d = np.sqrt(pow(alfa - 1/3.0, 2) + pow(beta - 1/3.0, 2) + pow(gama - 1/3.0, 2))
 
-                        color = self.phong(_P, N, colors_to_randomize, random_factor)
+                        color = self.phong(_P, N, cores_randomizadas, fator_de_randomizacao)
                         glColor3f(color[0], color[1], color[2])
                         glVertex2f(pixel[0], pixel[1])
 
