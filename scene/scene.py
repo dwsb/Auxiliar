@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import numpy as np
+import numpy
 from op import opVetores
 from op.triangulos import Triangulo
 from OpenGL.GL import *
@@ -17,11 +17,11 @@ class Scene(object):
         self.r = 0
         self.t = 0
 
-        self.points = []
-        self.triangles = []
+        self.pontos = []
+        self.triangulos = []
         self.triangles_view_objects = []
         self.triangles_screen_objects = []
-        self.points_normal = []
+        self.pontos_normal = []
         self.triangles_normal = []
         self.view_coordinates = []
         self.screen_coordinates = []
@@ -41,63 +41,45 @@ class Scene(object):
         self.load_vertices(calice_input)
         self.load_ilumination(ilumination_input)
 
-    def load_vertices(self, calice_input):
-        with open(calice_input) as calice_config:
-            lines = calice_config.readlines()
+    def load_vertices(self, objeto_entrada):
+        with open(objeto_entrada) as objeto_config:
+            linhas = objeto_config.readlines()
 
-        number_points = int(lines[0].split(" ")[0])
+        pontos_num = int(linhas[0].split(" ")[0])
 
-        for x in range(1, number_points + 1):
-            points_splited = lines[x].splitlines()[0].split()
-            self.points.append(np.array([
-                float(points_splited[0]),
-                float(points_splited[1]),
-                float(points_splited[2])
-            ]))
+        for x in range(1, pontos_num + 1):
+            pontos_format = linhas[x].splitlines()[0].split()
+            self.pontos.append(numpy.array([float(pontos_format[0]),float(pontos_format[1]),float(pontos_format[2])]))
 
-            self.points_normal.append(np.array([0.0, 0.0, 0.0]))
+            self.pontos_normal.append(numpy.array([0.0, 0.0, 0.0]))
 
-        for x in range(number_points + 1, len(lines)):
-            triangles_splited = lines[x].splitlines()[0].split()
-            self.triangles.append(np.array([
-                int(triangles_splited[0]),
-                int(triangles_splited[1]),
-                int(triangles_splited[2])
-            ]))
+        for x in range(pontos_num + 1, len(linhas)):
+            triangulos_format = linhas[x].splitlines()[0].split()
+            self.triangulos.append( numpy.array([int(triangulos_format[0]), int(triangulos_format[1]), int(triangulos_format[2])]))
 
 
-    def load_ilumination(self, ilumination_input):
+    def load_ilumination(self, iluminacao_entrada):
         '''Carrega os dados de illuminação'''
-        with open(ilumination_input, 'r') as illumination:
-            lines_ilumination = illumination.readlines()
-            self.n_factor = float(lines_ilumination[-1])
+        with open(iluminacao_entrada, 'r') as iluminacao_config:
+            linhas_iluminacao = iluminacao_config.readlines()
+            self.n_factor = float(linhas_iluminacao[-1])
 
-            pl_splited = lines_ilumination[0].split()
-            self.pl = np.array([float(pl_splited[0]),
-                                float(pl_splited[1]),
-                                float(pl_splited[2])
-                                ])
-            self.ka = float(lines_ilumination[1])
+            pl_format = linhas_iluminacao[0].split()
 
-            ia_splited = lines_ilumination[2].split()
-            self.ia = np.array([float(ia_splited[0]),
-                                float(ia_splited[1]),
-                                float(ia_splited[2])
-                                ])
-            self.kd = float(lines_ilumination[3])
+            self.pl = numpy.array([float(pl_format[0]),float(pl_format[1]),float(pl_format[2])])
 
-            od_splited = lines_ilumination[4].split()
-            self.od = np.array([float(od_splited[0]),
-                                float(od_splited[1]),
-                                float(od_splited[2])
-                                ])
-            self.ks = float(lines_ilumination[5])
+            self.ka = float(linhas_iluminacao[1])
 
-            il_splited = lines_ilumination[6].split()
-            self.il = np.array([float(il_splited[0]),
-                                float(il_splited[1]),
-                                float(il_splited[2])
-                                ])
+            ia_format = linhas_iluminacao[2].split()
+            self.ia = numpy.array([float(ia_format[0]),float(ia_format[1]),float(ia_format[2])])
+            self.kd = float(linhas_iluminacao[3])
+
+            od_format = linhas_iluminacao[4].split()
+            self.od = numpy.array([float(od_format[0]),float(od_format[1]),float(od_format[2])])
+            self.ks = float(linhas_iluminacao[5])
+
+            il_format = linhas_iluminacao[6].split()
+            self.il = numpy.array([float(il_format[0]),float(il_format[1]),float(il_format[2])])
 
     '''a iluminação de phong é caracterizada pela junção dos vetores de iluminação
         de ambiente, difusa e especular'''
@@ -120,14 +102,14 @@ class Scene(object):
         l = opVetores.normalizar(l)
         N = opVetores.normalizar(N)
 
-        id = np.array([0.0, 0.0, 0.0])
-        ie = np.array([0.0, 0.0, 0.0])
+        id = numpy.array([0.0, 0.0, 0.0])
+        ie = numpy.array([0.0, 0.0, 0.0])
 
         v = opVetores.normalizar(-ponto)
-        if (np.dot(v,N) < 0):
+        if (numpy.dot(v,N) < 0):
             N = -N
 
-        if (np.dot(N, l) >= 0):
+        if (numpy.dot(N, l) >= 0):
             attenuation = random.uniform(1-random_factor, 1)
 
             random_r = attenuation if colors_to_randomize['R'] is True else 1
@@ -141,13 +123,13 @@ class Scene(object):
             # elif d > 0.5:
             #     self.od = np.array([0.1, 0.1, 0.9])
 
-            od = np.array([self.od[0]*random_r, self.od[1]*random_g, self.od[2]*random_b])
+            od = numpy.array([self.od[0]*random_r, self.od[1]*random_g, self.od[2]*random_b])
 
-            id = (od * self.il) * self.kd * (np.dot(N,l))
+            id = (od * self.il) * self.kd * (numpy.dot(N,l))
 
-            r = opVetores.normalizar((2*N*np.dot(N, l)) - l)
-            if (np.dot(v,r) >= 0):
-                ie = (self.il) * self.ks * (pow(float(np.dot(v,r)), self.n_factor))
+            r = opVetores.normalizar((2*N*numpy.dot(N, l)) - l)
+            if (numpy.dot(v,r) >= 0):
+                ie = (self.il) * self.ks * (pow(float(numpy.dot(v,r)), self.n_factor))
 
         color = ia + id + ie
 
@@ -160,13 +142,13 @@ class Scene(object):
 
 
     def create_triangle_screen_objects(self):
-        for t in self.triangles:
+        for t in self.triangulos:
             p1, p2, p3 = self.screen_coordinates[t[0] - 1], self.screen_coordinates[t[1] - 1], self.screen_coordinates[t[2] - 1]
             self.triangles_screen_objects.append(Triangulo(p1, p2, p3, t[0], t[1], t[2]))
 
 
     def init_zbuffer(self, height, width):
-        self.z_buffer = np.full((max(height, width) + 1, max(width, height) + 1), sys.maxint, dtype=float)
+        self.z_buffer = numpy.full((max(height, width) + 1, max(width, height) + 1), sys.maxint, dtype=float)
 
 
     def rasterize_screen_triangles(self, colors_to_randomize, random_factor):
@@ -250,7 +232,7 @@ class Scene(object):
                 '''
                 Vertice v4 = new Vertice((int)(vt1.x + ((float)(vt2.y - vt1.y) / (float)(vt3.y - vt1.y)) * (vt3.x - vt1.x)), vt2.y);
                 '''
-                v4 = np.array([
+                v4 = numpy.array([
                     int(v[0][0] + (float(v[1][1] - v[0][1]) / float(v[2][1] - v[0][1])) * (v[2][0] - v[0][0])),
                     v[1][1]
                 ])
@@ -271,7 +253,7 @@ class Scene(object):
             x_min = min(t.min_x, min(curx1, curx2))
             x_max = max(t.max_x, max(curx1, curx2))
             for x in range(int(x_min), int(x_max)+1):
-                pixel = np.array([x, y])
+                pixel = numpy.array([x, y])
                 if t.pontos_triangulos(pixel) or colinear:
                     '''
                     verifica se o pixel realmente pertence ao triângulo para corrigir casos de erro de precisão
@@ -288,9 +270,9 @@ class Scene(object):
                     if _P[2] <= self.z_buffer[pixel[0]][pixel[1]]:
                         self.z_buffer[pixel[0]][pixel[1]] = _P[2]
 
-                        N = (alfa * self.points_normal[t.ind1 - 1] +
-                             beta * self.points_normal[t.ind2 - 1] +
-                             gama * self.points_normal[t.ind3 - 1])
+                        N = (alfa * self.pontos_normal[t.ind1 - 1] +
+                             beta * self.pontos_normal[t.ind2 - 1] +
+                             gama * self.pontos_normal[t.ind3 - 1])
 
                         # d = np.sqrt(pow(alfa - 1/3.0, 2) + pow(beta - 1/3.0, 2) + pow(gama - 1/3.0, 2))
 
