@@ -10,8 +10,8 @@ import argparse, sys, os.path
 
 largura, altura = 800, 600
 
-input_camera = 'input/maca.cfg'
-input_objeto = 'input/maca.byu'
+input_camera = 'input/entrada/Cameras/maca.cfg'
+input_objeto = 'input/entrada/Objetos/maca.byu'
 input_iluminacao = 'input/iluminacao.txt'
 
 cores = {
