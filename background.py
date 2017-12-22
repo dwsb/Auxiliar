@@ -55,7 +55,7 @@ def run(width, height, colors_to_randomize, random_factor, input_camera, input_o
         sc.screen_coordinates.append(cam.converter_coordenadas(vp))
 
     """2.7) Inicializa z-buffer."""
-    sc.init_zbuffer(width, height)
+    sc.zbuffer(width, height)
 
     #passando os triângulos para coordenadas de tela
     sc.create_triangle_screen_objects()

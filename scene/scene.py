@@ -7,9 +7,8 @@ import sys, random
 
 
 class Scene(object):
-    """docstring for Scene"""
 
-    def __init__(self, calice_input, ilumination_input):
+    def __init__(self, objeto_entrada, iluminacao_entrada):
         super(Scene, self).__init__()
 
         self.debug = True
@@ -38,10 +37,10 @@ class Scene(object):
 
 
         self.z_buffer = []
-        self.load_vertices(calice_input)
-        self.load_ilumination(ilumination_input)
+        self.carrega_vertices(objeto_entrada)
+        self.carrega_iluminacao(iluminacao_entrada)
 
-    def load_vertices(self, objeto_entrada):
+    def carrega_vertices(self, objeto_entrada):
         with open(objeto_entrada) as objeto_config:
             linhas = objeto_config.readlines()
 
@@ -58,7 +57,7 @@ class Scene(object):
             self.triangulos.append( numpy.array([int(triangulos_format[0]), int(triangulos_format[1]), int(triangulos_format[2])]))
 
 
-    def load_ilumination(self, iluminacao_entrada):
+    def carrega_iluminacao(self, iluminacao_entrada):
         '''Carrega os dados de illuminação'''
         with open(iluminacao_entrada, 'r') as iluminacao_config:
             linhas_iluminacao = iluminacao_config.readlines()
@@ -96,7 +95,7 @@ class Scene(object):
     '''
         final_color = ambient_component + diffuse_component + specular_component
     '''
-    def pixel_phong_ilumination(self, ponto, N, colors_to_randomize, random_factor):
+    def phong(self, ponto, N, colors_to_randomize, random_factor):
         ia = self.ia*self.ka
         l = (self.pl - ponto)
         l = opVetores.normalizar(l)
@@ -147,7 +146,7 @@ class Scene(object):
             self.triangles_screen_objects.append(Triangulo(p1, p2, p3, t[0], t[1], t[2]))
 
 
-    def init_zbuffer(self, height, width):
+    def zbuffer(self, height, width):
         self.z_buffer = numpy.full((max(height, width) + 1, max(width, height) + 1), sys.maxint, dtype=float)
 
 
@@ -171,7 +170,7 @@ class Scene(object):
             :param triangle: triangulo a ser rasterizado
             :return: None
             '''
-            def fill_bottom_flat_triangle(vertices):
+            def bottom_flat(vertices):
                 '''
                 :param vertices: vertices do triangulo ordenados pelo Y
                 :return: None
@@ -187,12 +186,12 @@ class Scene(object):
                 scanlineY = v[0][1]
                 while scanlineY <= v[1][1]:
                     ''' para cada linha do y scan, rasteriza a linha'''
-                    draw_line(triangle, curx1, curx2, scanlineY)
+                    desenha_linha(triangle, curx1, curx2, scanlineY)
                     curx1 += invslope1
                     curx2 += invslope2
                     scanlineY += 1
 
-            def fill_top_flat_triangle(vertices):
+            def top_flat(vertices):
                 '''
                     :param vertices: vertices do triangulo ordenados pelo Y
                     :return: None
@@ -207,7 +206,7 @@ class Scene(object):
 
                 scanlineY = v[2][1]
                 while scanlineY > v[0][1]:
-                    draw_line(triangle, curx1, curx2, scanlineY)
+                    desenha_linha(triangle, curx1, curx2, scanlineY)
                     curx1 -= invslope1
                     curx2 -= invslope2
                     scanlineY -= 1
@@ -220,13 +219,13 @@ class Scene(object):
                 ''' se for um triangulo "sem altura/colinear" ele é rasterizado como uma linha.'''
                 curx1 = min(v[0][0], min(v[1][0], v[2][0]))
                 curx2 = max(v[0][0], max(v[1][0], v[2][0]))
-                draw_line(triangle, curx1, curx2, v[0][1], colinear=True)
+                desenha_linha(triangle, curx1, curx2, v[0][1], colinear=True)
             elif v[1][1] == v[2][1]:
                 ''' caso bottom_flat'''
-                fill_bottom_flat_triangle(v)
+                bottom_flat(v)
             elif v[0][1] == v[1][1]:
                 '''caso top_flat'''
-                fill_top_flat_triangle(v)
+                top_flat(v)
             else:
                 ''' caso geral '''
                 '''
@@ -237,11 +236,11 @@ class Scene(object):
                     v[1][1]
                 ])
 
-                fill_bottom_flat_triangle([v[0], v[1], v4])
-                fill_top_flat_triangle([v[1], v4, v[2]])
+                bottom_flat([v[0], v[1], v4])
+                top_flat([v[1], v4, v[2]])
 
 
-        def draw_line(triangle, curx1, curx2, y, colinear=False):
+        def desenha_linha(triangle, curx1, curx2, y, colinear=False):
             '''
             :param triangle: triangulo a ser rasterizado
             :param curx1: Xmin, onde começa a rasterização da linha atual
@@ -276,7 +275,7 @@ class Scene(object):
 
                         # d = np.sqrt(pow(alfa - 1/3.0, 2) + pow(beta - 1/3.0, 2) + pow(gama - 1/3.0, 2))
 
-                        color = self.pixel_phong_ilumination(_P, N, colors_to_randomize, random_factor)
+                        color = self.phong(_P, N, colors_to_randomize, random_factor)
                         glColor3f(color[0], color[1], color[2])
                         glVertex2f(pixel[0], pixel[1])
 
