@@ -10,6 +10,7 @@ import argparse, sys, os.path
 
 largura, altura = 800, 600
 
+
 input_camera = 'input/entrada/Cameras/maca.cfg'
 input_objeto = 'input/entrada/Objetos/maca.byu'
 input_iluminacao = 'input/iluminacao.txt'
@@ -76,14 +77,16 @@ def captarEntradas(*args):
         glutDestroyWindow(window)
     elif args[0] == 'c':
         path = raw_input('\n - Insira o caminho com nome do novo objeto: ')
-        if os.path.isfile(path):
-            input_objeto = path
+        if os.path.isfile("input/Objetos/"+path):
+            input_objeto = "input/Objetos/"+ path
+            print(input_objeto)
         else:
             print 'Erro! Caminho errado ou o arquivo do objeto nao existe!!!\n'
             return
         camera_path = raw_input(' - Insira o caminho com nome do arquivo de camera correspondente ao objeto: ')
-        if os.path.isfile(camera_path):
-            input_camera = camera_path
+        if os.path.isfile("input/Cameras/"+camera_path):
+            input_camera = "input/Cameras/"+ camera_path
+            print input_camera
         else:
             print 'Erro! Caminho errado ou o arquivo da camera nao existe!!!\n'
 
