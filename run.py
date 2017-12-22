@@ -7,9 +7,7 @@ from OpenGL.GLUT import *
 from background import run
 import argparse, sys, os.path
 
-
 largura, altura = 800, 600
-
 
 input_camera = 'input/entrada/Cameras/maca.cfg'
 input_objeto = 'input/entrada/Objetos/maca.byu'
@@ -26,7 +24,6 @@ fator_randomizador = 0
 window = None
 
 PROMPT = ("ESC - SAIR","C - TROCAR DE OBJETO")
-
 
 def args():
     global cores, fator_randomizador
@@ -51,7 +48,6 @@ def args():
 
     fator_randomizador = args.fator_randomizador
 
-
 def renderizar():
     glClear(GL_COLOR_BUFFER_BIT)
     glPointSize(2.0)
@@ -65,7 +61,6 @@ def renderizar():
     glEnd()
     glFlush()
     glutSwapBuffers()
-
 
 def captarEntradas(*args):
     global settings
@@ -112,11 +107,7 @@ def captarEntradas(*args):
                     break
 
 
-
-
-
         glutPostRedisplay()
-
 
 
 def init():
@@ -126,7 +117,6 @@ def init():
     glOrtho(0.0, largura, altura, 0.0, -5.0, 5.0)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
-
 
 if __name__ == '__main__':
     args()

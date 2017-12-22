@@ -22,12 +22,12 @@ def run(width, height, colors_to_randomize, random_factor, input_camera, input_o
     sc = scene.Scene(input_objeto, input_iluminacao)
 
     """2.1) passar a posição da fonte de luz de coordenadas de mundo para coordenadas de vista"""
-    pl_view = cam.to_view_coordinate_system(sc.pl)
+    pl_view = cam.ver_coordenadas_sistema(sc.pl)
     sc.pl = pl_view
 
     """2.2) para cada ponto do objeto, projete-o para coordenadas de vista"""
     for p in sc.points:
-        sc.view_coordinates.append(cam.to_view_coordinate_system(p))
+        sc.view_coordinates.append(cam.ver_coordenadas_sistema(p))
 
     """
     2.3) inicializar as normais de todos os pontos do objeto com zero
@@ -37,7 +37,7 @@ def run(width, height, colors_to_randomize, random_factor, input_camera, input_o
     for t in sc.triangles:
         p1, p2, p3 = sc.view_coordinates[t[0] - 1], sc.view_coordinates[t[1] - 1], sc.view_coordinates[t[2] - 1]
 
-        tr_normal = cam.get_triangle_normal(p1, p2, p3)
+        tr_normal = cam.get_normal_triangulo(p1, p2, p3)
         tr_normal = op.opVetores.normalizar(tr_normal)
 
         sc.triangles_view_objects.append(Triangulo(p1, p2, p3, norm=tr_normal))
@@ -51,8 +51,7 @@ def run(width, height, colors_to_randomize, random_factor, input_camera, input_o
 
     """2.6) para cada ponto do obj, projete-o para coord de tela 2D, sem descartar os pontos em coord 3D"""
     for vp in sc.view_coordinates:
-        sc.screen_coordinates.append(cam.to_screen_coordinate_system(vp))
-
+        sc.screen_coordinates.append(cam.converter_coordenadas(vp))
 
     """2.7) Inicializa z-buffer."""
     sc.init_zbuffer(width, height)
@@ -62,6 +61,5 @@ def run(width, height, colors_to_randomize, random_factor, input_camera, input_o
 
     """2.8) Realiza a varredura nos triangulos em coordenada de tela."""
     sc.rasterize_screen_triangles(colors_to_randomize, random_factor)
-
     
     return sc

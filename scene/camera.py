@@ -31,7 +31,7 @@ class Camera(object):
         self.height = height
 
     '''retorna o ponto p no sistema de coordenadas da camera (camera_coordinate_system)'''
-    def to_view_coordinate_system(self, p):
+    def ver_coordenadas_sistema(self, p):
         point = numpy.array([0.0,0.0,0.0])
         point[0] = p[0] - self.posicao_camera[0]
         point[1] = p[1] - self.posicao_camera[1]
@@ -43,7 +43,14 @@ class Camera(object):
 
         return result
 
-    def to_screen_coordinate_system(self, p):
+    def get_normal_triangulo(self, p1, p2, p3):
+        v1 = p2 - p1
+        v2 = p3 - p1
+
+        return numpy.cross(v1, v2)
+
+
+    def converter_coordenadas(self, p):
         '''calculate projection coordinates'''
         x = float(self.d / self.hx) * (p[0] / p[2])
         y = float(self.d / self.hy) * (p[1] / p[2])
@@ -52,14 +59,9 @@ class Camera(object):
             [(int)(((x + 1)  * (self.width/ 2))),
              (int)(((1 - y) * (self.height/ 2)))]
         )
-
         return coordenada_tela
 
-    def get_triangle_normal(self, p1, p2, p3):
-        v1 = p2 - p1
-        v2 = p3 - p1
 
-        return numpy.cross(v1, v2)
 
 
 
