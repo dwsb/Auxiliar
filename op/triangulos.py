@@ -16,8 +16,9 @@ class Triangulo(object):
         self.max_y = max(self.v1[1], max(self.v2[1], self.v3[1]))
 
 
-        '''verifica se pontos pertencem ao triangulo'''
     def pontos_triangulos(self, point):
+        '''verifica se pontos pertencem ao triangulo'''
+
         sign = lambda p1, p2, p3: (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1])
 
         b1 = sign(point, self.v1, self.v2) <= 0.0
@@ -27,7 +28,7 @@ class Triangulo(object):
         return (b1 == b2) and (b2 == b3)
 
     def coordenadas_baricentricas(self, point):
-        '''achando coordenadas baricentricas do ponto usando a regra de cramer para resolver o sistema'''
+        '''achando coordenadas baricentricas do ponto usando cramer para resolver o sistema linear'''
         v0 = self.v2 - self.v1
         v1 = self.v3 - self.v1
         v2 = point - self.v1

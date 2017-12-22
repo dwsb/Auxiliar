@@ -30,31 +30,32 @@ class Camera(object):
         self.width = width
         self.height = height
 
-    '''retorna o ponto p no sistema de coordenadas da camera (camera_coordinate_system)'''
     def ver_coordenadas_sistema(self, p):
-        point = numpy.array([0.0,0.0,0.0])
-        point[0] = p[0] - self.posicao_camera[0]
-        point[1] = p[1] - self.posicao_camera[1]
-        point[2] = p[2] - self.posicao_camera[2]
+        '''retorna o ponto p dentro sistema de coordenadas de camera'''
 
-        result = numpy.array([self.UVN_matriz[0][0] * point[0] + self.UVN_matriz[0][1] * point[1] + self.UVN_matriz[0][2] * point[2],
-                            self.UVN_matriz[1][0] * point[0] + self.UVN_matriz[1][1] * point[1] + self.UVN_matriz[1][2] * point[2],
-                            self.UVN_matriz[2][0] * point[0] + self.UVN_matriz[2][1] * point[1] + self.UVN_matriz[2][2] * point[2]])
+        ponto = numpy.array([0.0,0.0,0.0])
+        ponto[0] = p[0] - self.posicao_camera[0]
+        ponto[1] = p[1] - self.posicao_camera[1]
+        ponto[2] = p[2] - self.posicao_camera[2]
+
+        result = numpy.array([self.UVN_matriz[0][0] * ponto[0] + self.UVN_matriz[0][1] * ponto[1] + self.UVN_matriz[0][2] * ponto[2],
+                            self.UVN_matriz[1][0] * ponto[0] + self.UVN_matriz[1][1] * ponto[1] + self.UVN_matriz[1][2] * ponto[2],
+                            self.UVN_matriz[2][0] * ponto[0] + self.UVN_matriz[2][1] * ponto[1] + self.UVN_matriz[2][2] * ponto[2]])
 
         return result
 
     def get_normal_triangulo(self, p1, p2, p3):
+        '''retorna a normal do triangulo'''
         v1 = p2 - p1
         v2 = p3 - p1
-
         return numpy.cross(v1, v2)
 
 
     def converter_coordenadas(self, p):
-        '''calculate projection coordinates'''
+        '''Calcular projecao de coordenadas'''
         x = float(self.d / self.hx) * (p[0] / p[2])
         y = float(self.d / self.hy) * (p[1] / p[2])
-        '''convert to screen'''
+        '''Converter para coordenadas de tela'''
         coordenada_tela = numpy.array(
             [(int)(((x + 1)  * (self.width/ 2))),
              (int)(((1 - y) * (self.height/ 2)))]
