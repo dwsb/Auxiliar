@@ -1,4 +1,4 @@
-import numpy as np
+import numpy
 
 class Triangulo(object):
     def __init__(self, v1, v2, v3, ind1=None, ind2=None, ind3=None, norm=None):
@@ -32,11 +32,11 @@ class Triangulo(object):
         v0 = self.v2 - self.v1
         v1 = self.v3 - self.v1
         v2 = point - self.v1
-        d00 = np.dot(v0, v0)
-        d01 = np.dot(v0, v1)
-        d11 = np.dot(v1, v1)
-        d20 = np.dot(v2, v0)
-        d21 = np.dot(v2, v1)
+        d00 = numpy.dot(v0, v0)
+        d01 = numpy.dot(v0, v1)
+        d11 = numpy.dot(v1, v1)
+        d20 = numpy.dot(v2, v0)
+        d21 = numpy.dot(v2, v1)
         aux = float(d00 * d11 - d01 * d01)
         beta = 0 if aux == 0 else (d11 * d20 - d01 * d21) / aux
         gama = 0 if aux == 0 else (d00 * d21 - d01 * d20) / aux
